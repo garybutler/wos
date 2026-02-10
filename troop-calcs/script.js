@@ -14,6 +14,16 @@ async function init() {
     populateDropdowns(levels);
     
     // --- SECTION 1: SPEED ---
+    const updateFinalSpeed = (raw) => {
+      const state = parseFloat(document.getElementById('stateBuff').value) || 0;
+      const min = parseFloat(document.getElementById('ministerBuff').value) || 0;
+      currentTotalSpeed = raw + state; // Base calculation + buffs
+      // If minister is selected, add it (usually multiplicative in game, but additive for raw speed stats)
+      currentTotalSpeed += min; 
+      
+      document.getElementById('totalSpeedResult').innerText = currentTotalSpeed.toFixed(2);
+    };
+
     document.getElementById('btnCalculateRaw').addEventListener('click', () => {
       const type = document.getElementById('revTypeSelect').value;
       const level = parseInt(document.getElementById('revLevelSelect').value);
@@ -32,15 +42,16 @@ async function init() {
         const rawSpeed = (baseSecs / actualSecs) * 100;
         document.getElementById('rawSpeedResult').innerText = rawSpeed.toFixed(2);
         updateFinalSpeed(rawSpeed);
-        }
+      }
     });
 
-    const updateFinalSpeed = (raw) => {
-      const state = parseFloat(document.getElementById('stateBuff').value) || 0;
-      const min = parseFloat(document.getElementById('ministerBuff').value) || 0;
-      currentTotalSpeed = raw + state + min;
-      document.getElementById('totalSpeedResult').innerText = currentTotalSpeed.toFixed(2);
-    };
+    // Real-time updates when buffs change
+    ['stateBuff', 'ministerBuff'].forEach(id => {
+        document.getElementById(id).addEventListener('input', () => {
+            const raw = parseFloat(document.getElementById('rawSpeedResult').innerText) || 0;
+            updateFinalSpeed(raw);
+        });
+    });
 
     // --- SECTION 2: TRAINING ---
     document.getElementById('btnCalcTrain').addEventListener('click', () => {
@@ -51,6 +62,7 @@ async function init() {
 
       if (!troop) return;
 
+      // Formula: Total Time = (Base Time / (1 + Speed%)) * Amount
       const adjTimePer1 = troop.time / (1 + (currentTotalSpeed / 100));
       const totalSecs = adjTimePer1 * amount;
 
@@ -78,20 +90,26 @@ async function init() {
       });
     });
 
+    // Trigger initial state
     from.dispatchEvent(new Event('change'));
 
     document.getElementById('btnCalcPromo').addEventListener('click', () => {
       const amount = parseInt(document.getElementById('promoAmount').value);
+      if(!to.value) return; // Prevent calculation if no higher level exists
+
       const pPts = (koiData.stage_4.points[`lvl${to.value}_troop`] - koiData.stage_4.points[`lvl${from.value}_troop`]) * amount;
       document.getElementById('promoPromoResult').innerText = pPts.toLocaleString();
     });
 
-  } catch (e) { console.error("Data Load Error", e); }
+  } catch (e) { 
+      console.error("Data Load Error: Please check your JSON syntax.", e); 
+  }
 }
 
 function populateDropdowns(levels) {
   ['revLevelSelect', 'levelSelect', 'promoFrom'].forEach(id => {
     const el = document.getElementById(id);
+    if (!el) return;
     levels.forEach(t => {
         const opt = document.createElement('option');
         opt.value = t; opt.textContent = `Level ${t}`;
@@ -105,7 +123,14 @@ function formatTime(s) {
   const h = Math.floor((s % 86400) / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sec = Math.floor(s % 60);
-  return d > 0 ? `${d}d ${h}h ${m}m` : `${h}h ${m}m ${sec}s`;
+  
+  let parts = [];
+  if (d > 0) parts.push(`${d}d`);
+  if (h > 0) parts.push(`${h}h`);
+  if (m > 0) parts.push(`${m}m`);
+  if (sec > 0 || parts.length === 0) parts.push(`${sec}s`);
+  
+  return parts.join(' ');
 }
 
 init();
