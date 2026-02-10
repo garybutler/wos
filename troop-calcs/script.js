@@ -9,14 +9,14 @@ async function init() {
     const troopData = await troopRes.json();
     const koiData = await koiRes.json();
 
-    // Populate Tiers
-    const tiers = [...new Set(troopData.map(t => t.tier))];
-    populateDropdowns(tiers);
+    // Populate Levels
+    const levels = [...new Set(troopData.map(t => t.level))];
+    populateDropdowns(levels);
     
     // --- SECTION 1: SPEED ---
     document.getElementById('btnCalculateRaw').addEventListener('click', () => {
       const type = document.getElementById('revTypeSelect').value;
-      const tier = parseInt(document.getElementById('revTierSelect').value);
+      const level = parseInt(document.getElementById('revLevelSelect').value);
       const amount = parseInt(document.getElementById('revAmount').value);
       
       const d = parseInt(document.getElementById('days').value) || 0;
@@ -25,7 +25,7 @@ async function init() {
       const s = parseInt(document.getElementById('secs').value) || 0;
       
       const actualSecs = (d * 86400) + (h * 3600) + (m * 60) + s;
-      const troop = troopData.find(t => t.type === type && t.tier === tier);
+      const troop = troopData.find(t => t.type === type && t.level === level);
       
       if (actualSecs > 0 && troop) {
         const baseSecs = troop.time * amount;
@@ -45,9 +45,9 @@ async function init() {
     // --- SECTION 2: TRAINING ---
     document.getElementById('btnCalcTrain').addEventListener('click', () => {
       const type = document.getElementById('typeSelect').value;
-      const tier = document.getElementById('tierSelect').value;
+      const level = document.getElementById('levelSelect').value;
       const amount = parseInt(document.getElementById('trainAmount').value);
-      const troop = troopData.find(t => t.type === type && t.tier == tier);
+      const troop = troopData.find(t => t.type === type && t.level == level);
 
       if (!troop) return;
 
@@ -60,7 +60,7 @@ async function init() {
       document.getElementById('coalRes').innerText = (troop.coal * amount).toLocaleString();
       document.getElementById('ironRes').innerText = (troop.iron * amount).toLocaleString();
 
-      const pts = koiData.stage_4.points[`lvl${tier}_troop`] * amount;
+      const pts = koiData.stage_4.points[`lvl${level}_troop`] * amount;
       document.getElementById('koiResult').innerText = pts.toLocaleString();
     });
 
@@ -70,14 +70,14 @@ async function init() {
 
     from.addEventListener('change', () => {
       to.innerHTML = '';
-      const currentTier = parseInt(from.value);
-      tiers.filter(t => t > currentTier).forEach(t => {
+      const currentLevel = parseInt(from.value);
+      levels.filter(t => t > currentLevel).forEach(t => {
           const opt = document.createElement('option');
-          opt.value = t; opt.textContent = `Tier ${t}`;
+          opt.value = t; opt.textContent = `Level ${t}`;
           to.appendChild(opt);
       });
     });
-    
+
     from.dispatchEvent(new Event('change'));
 
     document.getElementById('btnCalcPromo').addEventListener('click', () => {
@@ -89,12 +89,12 @@ async function init() {
   } catch (e) { console.error("Data Load Error", e); }
 }
 
-function populateDropdowns(tiers) {
-  ['revTierSelect', 'tierSelect', 'promoFrom'].forEach(id => {
+function populateDropdowns(levels) {
+  ['revLevelSelect', 'levelSelect', 'promoFrom'].forEach(id => {
     const el = document.getElementById(id);
-    tiers.forEach(t => {
+    levels.forEach(t => {
         const opt = document.createElement('option');
-        opt.value = t; opt.textContent = `Tier ${t}`;
+        opt.value = t; opt.textContent = `Level ${t}`;
         el.appendChild(opt);
     });
   });
