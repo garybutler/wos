@@ -15,10 +15,15 @@ async function init() {
     const levels = [...new Set(troopData.map(t => t.level))];
     populateDropdowns(levels);
     
+    // --- UTILITY: UPDATE TOTAL SPEED ---
     const updateFinalSpeed = (raw) => {
       const state = parseFloat(document.getElementById('stateBuff').value) || 0;
       const min = parseFloat(document.getElementById('ministerBuff').value) || 0;
+      
+      // We store the "Bonus" speed for calculations
       currentTotalSpeed = raw + state + min;
+      
+      // Display shows 0.00% or whatever the bonus is
       document.getElementById('totalSpeedResult').innerText = currentTotalSpeed.toFixed(2);
     };
 
@@ -27,22 +32,31 @@ async function init() {
       const type = document.getElementById('revTypeSelect').value;
       const level = parseInt(document.getElementById('revLevelSelect').value);
       const amount = parseInt(document.getElementById('revAmount').value) || 0;
-      const actualSecs = (parseInt(document.getElementById('days').value) || 0) * 86400 +
-                         (parseInt(document.getElementById('hours').value) || 0) * 3600 +
-                         (parseInt(document.getElementById('mins').value) || 0) * 60 +
-                         (parseInt(document.getElementById('secs').value) || 0);
       
+      const d = parseInt(document.getElementById('days').value) || 0;
+      const h = parseInt(document.getElementById('hours').value) || 0;
+      const m = parseInt(document.getElementById('mins').value) || 0;
+      const s = parseInt(document.getElementById('secs').value) || 0;
+      
+      const actualSecs = (d * 86400) + (h * 3600) + (m * 60) + s;
       const troop = troopData.find(t => t.type === type && t.level === level);
-      if (actualSecs > 0 && troop) {
-        const rawSpeed = ((troop.time * amount) / actualSecs) * 100;
-        document.getElementById('rawSpeedResult').innerText = rawSpeed.toFixed(2);
-        updateFinalSpeed(rawSpeed);
+      
+      if (actualSecs > 0 && troop && amount > 0) {
+        const baseSecs = troop.time * amount;
+        
+        // Corrected Formula: (Base / Actual - 1) * 100 gives the BONUS percentage
+        const rawSpeed = ((baseSecs / actualSecs) - 1) * 100;
+        const displayRaw = Math.max(0, rawSpeed); // Prevent negative numbers
+        
+        document.getElementById('rawSpeedResult').innerText = displayRaw.toFixed(2);
+        updateFinalSpeed(displayRaw);
       }
     });
 
     ['stateBuff', 'ministerBuff'].forEach(id => {
         document.getElementById(id).addEventListener('input', () => {
-            updateFinalSpeed(parseFloat(document.getElementById('rawSpeedResult').innerText) || 0);
+            const raw = parseFloat(document.getElementById('rawSpeedResult').innerText) || 0;
+            updateFinalSpeed(raw);
         });
     });
 
@@ -55,7 +69,9 @@ async function init() {
 
       if (!troop) return;
 
+      // Formula: Adjusted Time = Base Time / (1 + (Bonus Speed / 100))
       const totalSecs = (troop.time / (1 + (currentTotalSpeed / 100))) * amount;
+
       document.getElementById('timeResult').innerText = formatTime(totalSecs);
       document.getElementById('meatRes').innerText = (troop.meat * amount).toLocaleString();
       document.getElementById('woodRes').innerText = (troop.wood * amount).toLocaleString();
@@ -89,11 +105,10 @@ async function init() {
 
       if (!troopTo || !troopFrom) return;
 
-      // Time Difference
+      // Promotion Time is the difference in base times
       const timeDiffPerTroop = troopTo.time - troopFrom.time;
       const totalSecs = (timeDiffPerTroop / (1 + (currentTotalSpeed / 100))) * amount;
       
-      // Points/Resources Difference
       const pTo = koiData.stage_4.points[`lvl${toLvl}_troop`] || 0;
       const pFrom = koiData.stage_4.points[`lvl${fromLvl}_troop`] || 0;
       
@@ -105,6 +120,7 @@ async function init() {
       document.getElementById('promoIronRes').innerText = ((troopTo.iron - troopFrom.iron) * amount).toLocaleString();
     });
 
+    // --- CLEAR ALL ---
     document.getElementById('btnClear').addEventListener('click', () => {
         location.reload();
     });
@@ -126,7 +142,13 @@ function populateDropdowns(levels) {
 function formatTime(s) {
   if (s <= 0) return "0s";
   const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60);
-  return d > 0 ? `${d}d ${h}h ${m}m` : `${h}h ${m}m ${sec}s`;
+  
+  let res = "";
+  if (d > 0) res += d + "d ";
+  if (h > 0) res += h + "h ";
+  if (m > 0) res += m + "m ";
+  if (sec > 0 || res === "") res += sec + "s";
+  return res.trim();
 }
 
 init();
