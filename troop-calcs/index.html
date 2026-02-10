@@ -3,94 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WoS Troop Tool</title>
+  <title>WoS Troop Toolkit</title>
   <link rel="stylesheet" href="../css/global.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
 </head>
 <body>
-  <header>
-    <h1>Troop Speed & Resources</h1>
-    <a href="../index.html" style="color: var(--accent-color); text-decoration: none;">← Back to Hub</a>
-  </header>
+  <div class="container">
+    <h1>Troop Command Center</h1>
 
-  <main class="container">
-      <section class="calc-section">
-        <h2>1. Troop Speed Calculation</h2>
-        <label>Current Training Setup:</label>
-        <div class="input-row" style="grid-template-columns: 1fr 1fr;">
-          <select id="revTypeSelect">
-            <option value="Infantry">Infantry</option>
-            <option value="Lancer">Lancer</option>
-            <option value="Marksman">Marksman</option>
-          </select>
-          <select id="revLevelSelect"></select>
-        </div>
-        
-        <label>Amount Training:</label>
-        <input type="number" id="revAmount" value="1000">
+    <section>
+      <h2>1. Determine Training Speed</h2>
+      <div class="input-group">
+        <select id="revTypeSelect"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
+        <select id="revLevelSelect"></select>
+        <input type="number" id="revAmount" placeholder="Amount">
+      </div>
+      <div class="input-group">
+        <input type="number" id="days" placeholder="D">
+        <input type="number" id="hours" placeholder="H">
+        <input type="number" id="mins" placeholder="M">
+        <input type="number" id="secs" placeholder="S">
+      </div>
+      <div class="input-group">
+        <input type="number" id="stateBuff" placeholder="State Buff %">
+        <input type="number" id="ministerBuff" placeholder="Minister %">
+      </div>
+      <button id="btnCalculateRaw">Calculate Speed</button>
+      <p>Raw Speed: <span id="rawSpeedResult">0</span>% | Total: <span id="totalSpeedResult">0</span>%</p>
+    </section>
 
-        <label>Time Shown In-Game:</label>
-        <div class="time-inputs">
-          <input type="number" id="days" placeholder="D">
-          <input type="number" id="hours" placeholder="H">
-          <input type="number" id="mins" placeholder="M">
-          <input type="number" id="secs" placeholder="S">
-        </div>
-        <button id="btnCalculateRaw">Calculate Base Speed</button>
-        <p>Base Speed: <strong id="rawSpeedResult">0</strong>%</p>
-        
-        <div style="border-top: 1px solid #444; margin: 15px 0;"></div>
-        
-        <label>State Buff (10%):</label>
-        <input type="number" id="stateBuff" value="0">
-        <label>Minister Buff (20%):</label>
-        <input type="number" id="ministerBuff" value="0">
-        <p>Total Effective Speed: <strong id="totalSpeedResult">0</strong>%</p>
-      </section>
+    <section>
+      <h2>2. New Training</h2>
+      <div class="input-group">
+        <select id="typeSelect"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
+        <select id="levelSelect"></select>
+        <input type="number" id="trainAmount" placeholder="Amount">
+      </div>
+      <button id="btnCalcTrain">Calculate Training</button>
+      <div class="results">
+        <p>Time: <span id="timeResult">0s</span> | KOI: <span id="koiResult">0</span></p>
+        <p>🥩 <span id="meatRes">0</span> | 🪵 <span id="woodRes">0</span> | 🪵 <span id="coalRes">0</span> | ⚙️ <span id="ironRes">0</span></p>
+      </div>
+    </section>
 
-      <section class="calc-section">
-        <h2>2. Training & Resource Planner</h2>
-        <div class="input-row" style="grid-template-columns: 1fr 1fr;">
-          <select id="typeSelect">
-            <option value="Infantry">Infantry</option>
-            <option value="Lancer">Lancer</option>
-            <option value="Marksman">Marksman</option>
-          </select>
-          <select id="levelSelect"></select>
-        </div>
-        <label>Target Amount:</label>
-        <input type="number" id="trainAmount" value="1000">
-        <button id="btnCalcTrain">Calculate Resources & Time</button>
-        
-        <div class="results">
-          <p>Time Needed: <strong id="timeResult">-</strong></p>
-          <p>KOI Points: <strong id="koiResult">0</strong></p>
-          <div class="resource-grid">
-            <div>Meat: <span id="meatRes">0</span></div>
-            <div>Wood: <span id="woodRes">0</span></div>
-            <div>Coal: <span id="coalRes">0</span></div>
-            <div>Iron: <span id="ironRes">0</span></div>
-          </div>
-        </div>
-      </section>
+    <section>
+      <h2>3. Promotion</h2>
+      <div class="input-group">
+        <select id="promoTypeSelect"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
+        <select id="promoFrom"></select> ⮕ <select id="promoTo"></select>
+        <input type="number" id="promoAmount" placeholder="Amount">
+      </div>
+      <button id="btnCalcPromo">Calculate Promotion</button>
+      <div class="results">
+        <p>Time: <span id="promoTimeResult">0s</span> | KOI: <span id="promoPointsResult">0</span></p>
+        <p>🥩 <span id="promoMeatRes">0</span> | 🪵 <span id="promoWoodRes">0</span> | 🪵 <span id="promoCoalRes">0</span> | ⚙️ <span id="promoIronRes">0</span></p>
+      </div>
+    </section>
 
-      <section class="calc-section">
-        <h2>3. Promotion Points</h2>
-        <label>Troop Type:</label>
-        <select id="promoType">
-          <option value="Infantry">Infantry</option>
-          <option value="Lancer">Lancer</option>
-          <option value="Marksman">Marksman</option>
-        </select>
-        <div class="input-row" style="grid-template-columns: 1fr 1fr;">
-          <select id="promoFrom"></select>
-          <select id="promoTo"></select>
-        </div>
-        <label>Amount:</label>
-        <input type="number" id="promoAmount" value="1000">
-        <button id="btnCalcPromo">Calculate Promotion</button>
-        <p>Points Gained: <strong id="promoPromoResult">0</strong></p>
-      </section>
-  </main>
+    <button id="btnClear" style="background: #666; margin-top: 20px;">Clear All Fields</button>
+    <br><br>
+    <a href="../index.html">Back to Hub</a>
+  </div>
 
   <script src="script.js"></script>
 </body>
