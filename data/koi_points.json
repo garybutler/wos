@@ -1,0 +1,21 @@
+{
+  "stage_4": {
+    "name": "Combat Training",
+    "points": {
+      "chief_charm": 70,
+      "hero_gear_essence": 4000,
+      "widget": 8000,
+      "mithril": 144000,
+      "lvl1_troop": 1,
+      "lvl1_troop": 2,
+      "lvl1_troop": 3,
+      "lvl1_troop": 4,
+      "lvl1_troop": 5,
+      "lvl1_troop": 6,
+      "lvl1_troop": 7,
+      "lvl1_troop": 8,
+      "lvl1_troop": 9,
+      "lvl1_troop": 10,
+    }
+  }
+}
