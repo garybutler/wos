@@ -9,13 +9,13 @@
       "lvl1_troop": 1,
       "lvl2_troop": 2,
       "lvl3_troop": 3,
-      "lvl4_troop": 4,
-      "lvl5_troop": 5,
-      "lvl6_troop": 6,
-      "lvl7_troop": 7,
-      "lvl8_troop": 8,
-      "lvl9_troop": 9,
-      "lvl10_troop": 10
+      "lvl4_troop": 5,
+      "lvl5_troop": 7,
+      "lvl6_troop": 11,
+      "lvl7_troop": 16,
+      "lvl8_troop": 23,
+      "lvl9_troop": 30,
+      "lvl10_troop": 39
     }
   }
 }
