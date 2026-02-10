@@ -7,15 +7,15 @@
       "widget": 8000,
       "mithril": 144000,
       "lvl1_troop": 1,
-      "lvl1_troop": 2,
-      "lvl1_troop": 3,
-      "lvl1_troop": 4,
-      "lvl1_troop": 5,
-      "lvl1_troop": 6,
-      "lvl1_troop": 7,
-      "lvl1_troop": 8,
-      "lvl1_troop": 9,
-      "lvl1_troop": 10,
+      "lvl2_troop": 2,
+      "lvl3_troop": 3,
+      "lvl4_troop": 4,
+      "lvl5_troop": 5,
+      "lvl6_troop": 6,
+      "lvl7_troop": 7,
+      "lvl8_troop": 8,
+      "lvl9_troop": 9,
+      "lvl10_troop": 10
     }
   }
 }
