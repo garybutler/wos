@@ -1,15 +1,18 @@
 let currentTotalSpeed = 0;
 let troopData = [];
 let koiData = {};
+let svsData = {}
 
 async function init() {
   try {
-    const [tRes, kRes] = await Promise.all([
+    const [tRes, kRes, sRes] = await Promise.all([
       fetch('../data/troop_data.json'),
-      fetch('../data/koi_points.json')
+      fetch('../data/koi_points.json'),
+      fetch('../data/svs_points.json'),
     ]);
     troopData = await tRes.json();
     koiData = await kRes.json();
+    svsData = await sRes.json();
 
     const levels = [...new Set(troopData.map(t => t.level))];
     setupDropdowns(levels);
@@ -84,7 +87,7 @@ function updateSpeed() {
 }
 
 function calculateGrandTotal() {
-  let gTime = 0, gPts = 0, gMeat = 0, gWood = 0, gCoal = 0, gIron = 0;
+  let gTime = 0, gKPts = 0, gSPts = 0, gMeat = 0, gWood = 0, gCoal = 0, gIron = 0;
 
   // Training Lots
   for (let i = 1; i <= 3; i++) {
@@ -95,19 +98,22 @@ function calculateGrandTotal() {
 
     if (troop && amt > 0) {
       const time = (troop.time / (1 + currentTotalSpeed / 100)) * amt;
-      const pts = (koiData.stage_4.points[`lvl${lvl}_troop`] || 0) * amt;
+      const kPts = (koiData.stage_4.points[`lvl${lvl}_troop`] || 0) * amt;
+      const sPts = (svsData.stage_4.points[`lvl${lvl}_troop`] || 0) * amt;
       
       // Individual displays
       document.getElementById(`time${i}`).innerText = formatTime(time);
-      document.getElementById(`pts${i}`).innerText = pts.toLocaleString();
+      document.getElementById(`kPts${i}`).innerText = kPts.toLocaleString();
+      document.getElementById(`sPts${i}`).innerText = sPts.toLocaleString();
       document.getElementById(`m${i}`).innerText = (troop.meat * amt).toLocaleString();
       document.getElementById(`l${i}`).innerText = (troop.wood * amt).toLocaleString();
       document.getElementById(`c${i}`).innerText = (troop.coal * amt).toLocaleString();
       document.getElementById(`i${i}`).innerText = (troop.iron * amt).toLocaleString();
       document.getElementById(`tpsT${i}`).innerText = (amt / time).toFixed(4);
-      document.getElementById(`ppsT${i}`).innerText = (pts / time).toFixed(4);
+      document.getElementById(`kppsT${i}`).innerText = (kPts / time).toFixed(4);
+      document.getElementById(`sppsT${i}`).innerText = (sPts / time).toFixed(4);
 
-      gTime += time; gPts += pts;
+      gTime += time; gKPts += kPts; gSPts += sPts;
       gMeat += troop.meat * amt; gWood += troop.wood * amt;
       gCoal += troop.coal * amt; gIron += troop.iron * amt;
     }
@@ -125,19 +131,22 @@ function calculateGrandTotal() {
 
     if (tF && tT && amt > 0) {
       const time = ((tT.time - tF.time) / (1 + currentTotalSpeed / 100)) * amt;
-      const pts = ((koiData.stage_4.points[`lvl${tLvl}_troop`] || 0) - (koiData.stage_4.points[`lvl${fLvl}_troop`] || 0)) * amt;
+      const kPts = ((koiData.stage_4.points[`lvl${tLvl}_troop`] || 0) - (koiData.stage_4.points[`lvl${fLvl}_troop`] || 0)) * amt;
+      const sPts = ((svsData.stage_4.points[`lvl${tLvl}_troop`] || 0) - (svsData.stage_4.points[`lvl${fLvl}_troop`] || 0)) * amt;
       
       // Individual displays
       document.getElementById(`pTime${i}`).innerText = formatTime(time); // Added this line
-      document.getElementById(`pPts${i}`).innerText = pts.toLocaleString();
+      document.getElementById(`pKPts${i}`).innerText = kPts.toLocaleString();
+      document.getElementById(`pSPts${i}`).innerText = sPts.toLocaleString();
       document.getElementById(`pm${i}`).innerText = ((tT.meat - tF.meat) * amt).toLocaleString();
       document.getElementById(`pl${i}`).innerText = ((tT.wood - tF.wood) * amt).toLocaleString();
       document.getElementById(`pc${i}`).innerText = ((tT.coal - tF.coal) * amt).toLocaleString();
       document.getElementById(`pi${i}`).innerText = ((tT.iron - tF.iron) * amt).toLocaleString();
       document.getElementById(`tpsP${i}`).innerText = (amt / time).toFixed(4);
-      document.getElementById(`ppsP${i}`).innerText = (pts / time).toFixed(4);
+      document.getElementById(`kppsP${i}`).innerText = (kPts / time).toFixed(4);
+      document.getElementById(`sppsP${i}`).innerText = (sPts / time).toFixed(4);
 
-      gTime += time; gPts += pts;
+      gTime += time; gKPts += kPts; gSPts += sPts;
       gMeat += (tT.meat - tF.meat) * amt; gWood += (tT.wood - tF.wood) * amt;
       gCoal += (tT.coal - tF.coal) * amt; gIron += (tT.iron - tF.iron) * amt;
     }
@@ -145,7 +154,8 @@ function calculateGrandTotal() {
 
   // Update Grand Totals
   document.getElementById('grandTime').innerText = formatTime(gTime);
-  document.getElementById('grandPts').innerText = gPts.toLocaleString();
+  document.getElementById('grandKPts').innerText = gKPts.toLocaleString();
+  document.getElementById('grandSPts').innerText = gSPts.toLocaleString();
   document.getElementById('grandMeat').innerText = gMeat.toLocaleString();
   document.getElementById('grandWood').innerText = gWood.toLocaleString();
   document.getElementById('grandCoal').innerText = gCoal.toLocaleString();
