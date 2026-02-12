@@ -4,6 +4,7 @@ let koiData = {};
 let svsData = {}
 
 const $ = document.getElementById.bind(document);
+const $$ = document.querySelectorAll.bind(document);
 
 async function init() {
   try {
@@ -20,8 +21,12 @@ async function init() {
     setupDropdowns(levels);
     
     $('btnCalculateSpeed').addEventListener('click', updateSpeed);
-    $('btnCalculateAll').addEventListener('click', calculateGrandTotal);
     $('btnClear').addEventListener('click', () => location.reload());
+
+    // This makes the whole page refresh its math whenever you change any input
+    $$('input, select').forEach(element => {
+      element.addEventListener('change', calculateGrandTotal);
+    });
 
   } catch (e) { console.error("Data Load Error", e); }
 }
