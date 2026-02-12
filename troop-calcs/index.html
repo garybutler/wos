@@ -12,12 +12,10 @@
       --pico-spacing: 0.5rem;
     }
     body { padding-top: 20px; }
-    article>footer {
-      margin-top: 0;
-    }
-    button {
-      margin-bottom: var(--pico-spacing);
-    }
+    article>footer { margin-top: 0;}
+    button { margin-bottom: var(--pico-spacing); }
+    h6 { margin-bottom: 0.5rem; color: var(--pico-primary); }
+    kbd { font-family: inherit; }
     .result-box { 
       background: var(--pico-card-sectioning-background); 
       padding: 1rem; 
@@ -39,8 +37,9 @@
       padding-top: 0.5rem;
     }
     .grand-total-box { margin-top: 2rem; }
-    h6 { margin-bottom: 0.5rem; color: var(--pico-primary); }
-    kbd { font-family: inherit; }
+    @media (min-width: 768px) {
+      .text-centre { text-align: center; }
+    }
   </style>
 </head>
 <body>
@@ -52,6 +51,7 @@
     </div>
     <section>
       <h2>1. Training Speed</h2>
+      <p>Don't include buffs if already active</p>
       <article id="speed-calc">
         <div class="grid">
           <div>
@@ -73,7 +73,7 @@
             <input type="number" id="stateBuff" value="0">
           </div>
           <div>
-            <label id="ministerBuff">Minister %</label>
+            <label for="ministerBuff">Minister Buff %</label>
             <input type="number" id="ministerBuff" value="0">
           </div>
         </div>
@@ -209,15 +209,15 @@
     <article class="grand-total-box">
       <header><h4 style="margin:0">Grand Summary</h4></header>
       <div class="grid">
-        <div class="text-center">Total Time: <br><strong id="grandTime">0s</strong></div>
-        <div class="text-center">Total KOI Points: <br><strong id="grandKPts">0</strong></div>
-        <div class="text-center">Total KOI Points: <br><strong id="grandSPts">0</strong></div>
+        <div class="text-centre">Total Time: <br><strong id="grandTime">0s</strong></div>
+        <div class="text-centre">Total KOI Points: <br><strong id="grandKPts">0</strong></div>
+        <div class="text-centre">Total SvS Points: <br><strong id="grandSPts">0</strong></div>
       </div>
       <div class="grid" style="margin-top:1rem">
-        <div>Meat: <strong id="grandMeat">0</strong></div>
-        <div>Lumber: <strong id="grandWood">0</strong></div>
-        <div>Coal: <strong id="grandCoal">0</strong></div>
-        <div>Iron: <strong id="grandIron">0</strong></div>
+        <div class="text-centre">Meat: <strong id="grandMeat">0</strong></div>
+        <div class="text-centre">Lumber: <strong id="grandWood">0</strong></div>
+        <div class="text-centre">Coal: <strong id="grandCoal">0</strong></div>
+        <div class="text-centre">Iron: <strong id="grandIron">0</strong></div>
       </div>
       <footer>
         <button id="btnCalculateAll" class="primary">Calculate All</button>

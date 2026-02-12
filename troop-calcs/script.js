@@ -3,6 +3,8 @@ let troopData = [];
 let koiData = {};
 let svsData = {}
 
+const $ = document.getElementById.bind(document);
+
 async function init() {
   try {
     const [tRes, kRes, sRes] = await Promise.all([
@@ -17,21 +19,22 @@ async function init() {
     const levels = [...new Set(troopData.map(t => t.level))];
     setupDropdowns(levels);
     
-    document.getElementById('btnCalculateSpeed').addEventListener('click', updateSpeed);
-    document.getElementById('btnCalculateAll').addEventListener('click', calculateGrandTotal);
-    document.getElementById('btnClear').addEventListener('click', () => location.reload());
+    $('btnCalculateSpeed').addEventListener('click', updateSpeed);
+    $('btnCalculateAll').addEventListener('click', calculateGrandTotal);
+    $('btnClear').addEventListener('click', () => location.reload());
 
   } catch (e) { console.error("Data Load Error", e); }
 }
 
 function setupDropdowns(levels) {
-  populate(document.getElementById('revLevelSelect'), levels);
+  populate('revLevelSelect', levels);
 
   for (let i = 1; i <= 3; i++) {
-    populate(document.getElementById(`levelSelect${i}`), levels);
-    const from = document.getElementById(`pFrom${i}`);
-    const to = document.getElementById(`pTo${i}`);
-    populate(from, levels);
+    const from = $(`pFrom${i}`);
+    const to = $(`pTo${i}`);
+    
+    populate(`levelSelect${i}`, levels);
+    populate(`pFrom${i}`, levels);
 
     from.addEventListener('change', () => {
       const prevTo = to.value;
@@ -63,26 +66,27 @@ function populate(el, lvls) {
   lvls.forEach(l => {
     const opt = document.createElement('option');
     opt.value = l; opt.textContent = `Level ${l}`;
-    el.appendChild(opt);
+    $(el).appendChild(opt);
   });
 }
 
 function updateSpeed() {
-  const type = document.getElementById('revTypeSelect').value;
-  const lvl = parseInt(document.getElementById('revLevelSelect').value);
-  const amt = parseInt(document.getElementById('revAmount').value) || 0;
-  const s = (parseInt(document.getElementById('days').value) || 0) * 86400 +
-            (parseInt(document.getElementById('hours').value) || 0) * 3600 +
-            (parseInt(document.getElementById('mins').value) || 0) * 60 +
-            (parseInt(document.getElementById('secs').value) || 0);
+  const type = $('revTypeSelect').value;
+  const lvl = parseInt($('revLevelSelect').value);
+  const amt = parseInt($('revAmount').value) || 0;
+  const s = (parseInt($('days').value) || 0) * 86400 +
+            (parseInt($('hours').value) || 0) * 3600 +
+            (parseInt($('mins').value) || 0) * 60 +
+            (parseInt($('secs').value) || 0);
 
   const troop = troopData.find(t => t.type === type && t.level === lvl);
   if (s > 0 && troop && amt > 0) {
     const raw = ((troop.time * amt / s) - 1) * 100;
-    const bonus = parseFloat(document.getElementById('stateBuff').value || 0) + 
-                  parseFloat(document.getElementById('ministerBuff').value || 0);
+    const bonus = parseFloat($('stateBuff').value || 0) + 
+                  parseFloat($('ministerBuff').value || 0);
+    console.log($('stateBuff').value, $('ministerBuff').value)
     currentTotalSpeed = Math.max(0, raw) + bonus;
-    document.getElementById('totalSpeedResult').innerText = currentTotalSpeed.toFixed(2);
+    $('totalSpeedResult').innerText = currentTotalSpeed.toFixed(2);
   }
 }
 
@@ -91,9 +95,9 @@ function calculateGrandTotal() {
 
   // Training Lots
   for (let i = 1; i <= 3; i++) {
-    const type = document.getElementById(`typeSelect${i}`).value;
-    const lvl = document.getElementById(`levelSelect${i}`).value;
-    const amt = parseInt(document.getElementById(`trainAmount${i}`).value) || 0;
+    const type = $(`typeSelect${i}`).value;
+    const lvl = $(`levelSelect${i}`).value;
+    const amt = parseInt($(`trainAmount${i}`).value) || 0;
     const troop = troopData.find(t => t.type === type && t.level == lvl);
 
     if (troop && amt > 0) {
@@ -102,16 +106,16 @@ function calculateGrandTotal() {
       const sPts = (svsData.stage_4.points[`lvl${lvl}_troop`] || 0) * amt;
       
       // Individual displays
-      document.getElementById(`time${i}`).innerText = formatTime(time);
-      document.getElementById(`kPts${i}`).innerText = kPts.toLocaleString();
-      document.getElementById(`sPts${i}`).innerText = sPts.toLocaleString();
-      document.getElementById(`m${i}`).innerText = (troop.meat * amt).toLocaleString();
-      document.getElementById(`l${i}`).innerText = (troop.wood * amt).toLocaleString();
-      document.getElementById(`c${i}`).innerText = (troop.coal * amt).toLocaleString();
-      document.getElementById(`i${i}`).innerText = (troop.iron * amt).toLocaleString();
-      document.getElementById(`tpsT${i}`).innerText = (amt / time).toFixed(4);
-      document.getElementById(`kppsT${i}`).innerText = (kPts / time).toFixed(4);
-      document.getElementById(`sppsT${i}`).innerText = (sPts / time).toFixed(4);
+      $(`time${i}`).innerText = formatTime(time);
+      $(`kPts${i}`).innerText = kPts.toLocaleString();
+      $(`sPts${i}`).innerText = sPts.toLocaleString();
+      $(`m${i}`).innerText = (troop.meat * amt).toLocaleString();
+      $(`l${i}`).innerText = (troop.wood * amt).toLocaleString();
+      $(`c${i}`).innerText = (troop.coal * amt).toLocaleString();
+      $(`i${i}`).innerText = (troop.iron * amt).toLocaleString();
+      $(`tpsT${i}`).innerText = (amt / time).toFixed(4);
+      $(`kppsT${i}`).innerText = (kPts / time).toFixed(4);
+      $(`sppsT${i}`).innerText = (sPts / time).toFixed(4);
 
       gTime += time; gKPts += kPts; gSPts += sPts;
       gMeat += troop.meat * amt; gWood += troop.wood * amt;
@@ -121,10 +125,10 @@ function calculateGrandTotal() {
 
   // Promotion Lots
   for (let i = 1; i <= 3; i++) {
-    const type = document.getElementById(`pType${i}`).value;
-    const fLvl = parseInt(document.getElementById(`pFrom${i}`).value);
-    const tLvl = parseInt(document.getElementById(`pTo${i}`).value);
-    const amt = parseInt(document.getElementById(`pAmt${i}`).value) || 0;
+    const type = $(`pType${i}`).value;
+    const fLvl = parseInt($(`pFrom${i}`).value);
+    const tLvl = parseInt($(`pTo${i}`).value);
+    const amt = parseInt($(`pAmt${i}`).value) || 0;
 
     const tF = troopData.find(t => t.type === type && t.level === fLvl);
     const tT = troopData.find(t => t.type === type && t.level === tLvl);
@@ -135,16 +139,16 @@ function calculateGrandTotal() {
       const sPts = ((svsData.stage_4.points[`lvl${tLvl}_troop`] || 0) - (svsData.stage_4.points[`lvl${fLvl}_troop`] || 0)) * amt;
       
       // Individual displays
-      document.getElementById(`pTime${i}`).innerText = formatTime(time); // Added this line
-      document.getElementById(`pKPts${i}`).innerText = kPts.toLocaleString();
-      document.getElementById(`pSPts${i}`).innerText = sPts.toLocaleString();
-      document.getElementById(`pm${i}`).innerText = ((tT.meat - tF.meat) * amt).toLocaleString();
-      document.getElementById(`pl${i}`).innerText = ((tT.wood - tF.wood) * amt).toLocaleString();
-      document.getElementById(`pc${i}`).innerText = ((tT.coal - tF.coal) * amt).toLocaleString();
-      document.getElementById(`pi${i}`).innerText = ((tT.iron - tF.iron) * amt).toLocaleString();
-      document.getElementById(`tpsP${i}`).innerText = (amt / time).toFixed(4);
-      document.getElementById(`kppsP${i}`).innerText = (kPts / time).toFixed(4);
-      document.getElementById(`sppsP${i}`).innerText = (sPts / time).toFixed(4);
+      $(`pTime${i}`).innerText = formatTime(time); // Added this line
+      $(`pKPts${i}`).innerText = kPts.toLocaleString();
+      $(`pSPts${i}`).innerText = sPts.toLocaleString();
+      $(`pm${i}`).innerText = ((tT.meat - tF.meat) * amt).toLocaleString();
+      $(`pl${i}`).innerText = ((tT.wood - tF.wood) * amt).toLocaleString();
+      $(`pc${i}`).innerText = ((tT.coal - tF.coal) * amt).toLocaleString();
+      $(`pi${i}`).innerText = ((tT.iron - tF.iron) * amt).toLocaleString();
+      $(`tpsP${i}`).innerText = (amt / time).toFixed(4);
+      $(`kppsP${i}`).innerText = (kPts / time).toFixed(4);
+      $(`sppsP${i}`).innerText = (sPts / time).toFixed(4);
 
       gTime += time; gKPts += kPts; gSPts += sPts;
       gMeat += (tT.meat - tF.meat) * amt; gWood += (tT.wood - tF.wood) * amt;
@@ -153,13 +157,13 @@ function calculateGrandTotal() {
   }
 
   // Update Grand Totals
-  document.getElementById('grandTime').innerText = formatTime(gTime);
-  document.getElementById('grandKPts').innerText = gKPts.toLocaleString();
-  document.getElementById('grandSPts').innerText = gSPts.toLocaleString();
-  document.getElementById('grandMeat').innerText = gMeat.toLocaleString();
-  document.getElementById('grandWood').innerText = gWood.toLocaleString();
-  document.getElementById('grandCoal').innerText = gCoal.toLocaleString();
-  document.getElementById('grandIron').innerText = gIron.toLocaleString();
+  $('grandTime').innerText = formatTime(gTime);
+  $('grandKPts').innerText = gKPts.toLocaleString();
+  $('grandSPts').innerText = gSPts.toLocaleString();
+  $('grandMeat').innerText = gMeat.toLocaleString();
+  $('grandWood').innerText = gWood.toLocaleString();
+  $('grandCoal').innerText = gCoal.toLocaleString();
+  $('grandIron').innerText = gIron.toLocaleString();
 }
 
 init();
