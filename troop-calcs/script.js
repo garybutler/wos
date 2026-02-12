@@ -14,7 +14,7 @@ async function init() {
     const levels = [...new Set(troopData.map(t => t.level))];
     setupDropdowns(levels);
     
-    document.getElementById('btnCalculateRaw').addEventListener('click', updateSpeed);
+    document.getElementById('btnCalculateSpeed').addEventListener('click', updateSpeed);
     document.getElementById('btnCalculateAll').addEventListener('click', calculateGrandTotal);
     document.getElementById('btnClear').addEventListener('click', () => location.reload());
 
@@ -43,6 +43,17 @@ function setupDropdowns(levels) {
     });
     from.dispatchEvent(new Event('change'));
   }
+}
+
+function formatTime(s) {
+  if (s <= 0) return "0s";
+  const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60);
+  let r = "";
+  if (d > 0) r += d + "d ";
+  if (h > 0) r += h + "h ";
+  if (m > 0) r += m + "m ";
+  if (sec > 0 || r === "") r += sec + "s";
+  return r.trim();
 }
 
 function populate(el, lvls) {
@@ -139,17 +150,6 @@ function calculateGrandTotal() {
   document.getElementById('grandWood').innerText = gWood.toLocaleString();
   document.getElementById('grandCoal').innerText = gCoal.toLocaleString();
   document.getElementById('grandIron').innerText = gIron.toLocaleString();
-}
-
-function formatTime(s) {
-  if (s <= 0) return "0s";
-  const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60);
-  let r = "";
-  if (d > 0) r += d + "d ";
-  if (h > 0) r += h + "h ";
-  if (m > 0) r += m + "m ";
-  if (sec > 0 || r === "") r += sec + "s";
-  return r.trim();
 }
 
 init();

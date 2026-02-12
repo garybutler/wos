@@ -4,214 +4,214 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WoS Troop Toolkit</title>
-  <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  
   <style>
-    body { background: #f4f5f8; padding: 20px; }
-    .container { max-width: 1000px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .divider { margin: 1rem 0; }
-    .result-box { background: #f0f1f4; padding: 12px; border-radius: 4px; margin-top: 10px; border-left: 4px solid #5755d9; }
-    .res-item { font-size: 0.85rem; margin-bottom: 2px; }
-    .lot-resources { font-size: 0.75rem; color: #3b4351; margin-top: 5px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
-    .eff-text { font-size: 0.7rem; color: #66758c; margin-top: 4px; border-top: 1px solid #dcdfe6; padding-top: 4px; }
-    .grand-total-box { background: #3b4351; color: white; padding: 20px; border-radius: 8px; margin-top: 30px; }
-    .grand-total-box .res-value { color: #50fa7b; font-weight: bold; }
-    h1 { text-align: center; margin-bottom: 30px; }
-    h2 { font-size: 1.1rem; color: #5755d9; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-    .card { height: 100%; }
+    :root { 
+      --pico-font-size: 90%; 
+      --pico-spacing: 0.5rem;
+    }
+    body { padding-top: 20px; }
+    article>footer {
+      margin-top: 0;
+    }
+    button {
+      margin-bottom: var(--pico-spacing);
+    }
+    .result-box { 
+      background: var(--pico-card-sectioning-background); 
+      padding: 1rem; 
+      border-radius: var(--pico-border-radius);
+      border-left: 4px solid var(--pico-primary);
+      margin-top: var(--pico-spacing);
+    }
+    .lot-resources { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 0.5rem; 
+      font-size: 0.8rem;
+      margin: 0.5rem 0;
+    }
+    .eff-text { 
+      font-size: 0.75rem; 
+      opacity: 0.8; 
+      border-top: 1px solid var(--pico-muted-border-color);
+      padding-top: 0.5rem;
+    }
+    .grand-total-box { margin-top: 2rem; }
+    h6 { margin-bottom: 0.5rem; color: var(--pico-primary); }
+    kbd { font-family: inherit; }
   </style>
 </head>
 <body>
 
-  <div class="container grid-lg">
-    <h1>Troop Command Center</h1>
-
-    <div>
+  <main class="container">
+    <div style="text-align: center">
+      <h1>Troop Command Center</h1>
+      <p>Training and Promotion calculator</p>
+    </div>
+    <section>
       <h2>1. Training Speed</h2>
-      
-      <div class="columns">
-        <div class="column col-3 col-sm-12">
-          <div class="form-group">
-            <label class="form-label" for="revTypeSelect">Troop Type</label>
-            <select class="form-select" id="revTypeSelect">
+      <article id="speed-calc">
+        <div class="grid">
+          <div>
+            <label for="revTypeSelect">Troop Type</label>
+            <select id="revTypeSelect">
               <option>Infantry</option><option>Lancer</option><option>Marksman</option>
             </select>
           </div>
-        </div>
-        <div class="column col-3 col-sm-12">
-          <div class="form-group">
-            <label class="form-label" for="revLevelSelect">Level</label>
-            <select class="form-select" id="revLevelSelect"></select>
+          <div>
+            <label for="revLevelSelect">Level</label>
+            <select id="revLevelSelect"></select>
+          </div>
+          <div>
+            <label for="revAmount">Amount</label>
+            <input type="number" id="revAmount" placeholder="e.g. 1000">
+          </div>
+          <div>
+            <label for="stateBuff">State Buff %</label>
+            <input type="number" id="stateBuff" value="0">
+          </div>
+          <div>
+            <label id="ministerBuff">Minister %</label>
+            <input type="number" id="ministerBuff" value="0">
           </div>
         </div>
-        <div class="column col-2 col-sm-12">
-          <div class="form-group">
-            <label class="form-label" for="revAmount">Amount</label>
-            <input class="form-input" type="number" id="revAmount" placeholder="e.g. 1000">
-          </div>
-        </div>
-        <div class="column col-2 col-sm-12">
-          <div class="form-group">
-            <label class="form-label" for="stateBuff">State Buff %</label>
-            <input class="form-input" type="number" id="stateBuff" placeholder="0" value="0">
-          </div>
-        </div>
-        <div class="column col-2 col-sm-12">
-          <div class="form-group">
-            <label class="form-label" for="ministerBuff">Minister %</label>
-            <input class="form-input" type="number" id="ministerBuff" placeholder="0" value="0">
-          </div>
-        </div>
-      </div>
 
-      <div class="columns mt-2">
-        <div class="column col-8 col-sm-12">
-          <label class="form-label">Actual Training Time Shown in Game</label>
-          <div class="columns">
-            <div class="column col-3"><input class="form-input" type="number" id="days" placeholder="Days"></div>
-            <div class="column col-3"><input class="form-input" type="number" id="hours" placeholder="Hours"></div>
-            <div class="column col-3"><input class="form-input" type="number" id="mins" placeholder="Mins"></div>
-            <div class="column col-3"><input class="form-input" type="number" id="secs" placeholder="Secs"></div>
+        <label>Actual Training Time Shown in Game</label>
+        <div class="grid">
+          <input type="number" id="days" placeholder="Days">
+          <input type="number" id="hours" placeholder="Hours">
+          <input type="number" id="mins" placeholder="Mins">
+          <input type="number" id="secs" placeholder="Secs">
+          <div>
+            <button id="btnCalculateSpeed" style="width:100%">Calculate</button>
           </div>
         </div>
-        <div class="column col-4 col-sm-12">
-          <label class="form-label">&nbsp;</label> <button class="btn btn-primary btn-block" id="btnCalculateRaw">Update Speed</button>
-        </div>
-      </div>
-      
-      <p class="text-center mt-2">Total Training Speed: <strong><span id="totalSpeedResult">0</span>%</strong></p>
-    </div>
+        
+        <footer>
+          <small>Training Speed: <strong><span id="totalSpeedResult">0</span>%</strong></small>
+        </footer>
+      </article>
+    </section>
 
-    <div class="divider"></div>
-
-    <h2>2. Training</h2>
-    <div class="columns">
-      <div class="column col-4 col-md-12 mb-2">
-        <div class="card p-2">
-          <h6>Lot 1</h6>
-          <select class="form-select mb-1" id="typeSelect1"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
-          <select class="form-select mb-1" id="levelSelect1"></select>
-          <input class="form-input mb-1" type="number" id="trainAmount1" placeholder="Amount">
+    <section>
+      <h2>2. Training</h2>
+      <div class="grid">
+        <article>
+          <h6>Train 1</h6>
+          <select id="typeSelect1"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
+          <select id="levelSelect1"></select>
+          <input type="number" id="trainAmount1" placeholder="Amount">
           <div class="result-box">
-            <div class="res-item">Time: <span id="time1">0s</span> | Pts: <span id="pts1">0</span></div>
+            <div class="res-item">Time: <span id="time1">0s</span> | KOI Pts: <span id="pts1">0</span></div>
             <div class="lot-resources">
-              <span>M: <span id="m1">0</span></span><span>L: <span id="l1">0</span></span>
-              <span>C: <span id="c1">0</span></span><span>I: <span id="i1">0</span></span>
+              <span>Meat: <span id="m1">0</span></span><span>Lumber: <span id="l1">0</span></span>
+              <span>Coal: <span id="c1">0</span></span><span>Iron: <span id="i1">0</span></span>
             </div>
-            <div class="eff-text">Troops p/s: <span id="tpsT1">0</span> | Points p/s: <span id="ppsT1">0</span></div>
+            <div class="eff-text">Troops p/s: <span id="tpsT1">0</span> | KOI Points p/s: <span id="ppsT1">0</span></div>
           </div>
-        </div>
-      </div>
-      <div class="column col-4 col-md-12 mb-2">
-        <div class="card p-2">
-          <h6>Lot 2</h6>
-          <select class="form-select mb-1" id="typeSelect2"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
-          <select class="form-select mb-1" id="levelSelect2"></select>
-          <input class="form-input mb-1" type="number" id="trainAmount2" placeholder="Amount">
+        </article>
+        <article>
+          <h6>Train 2</h6>
+          <select id="typeSelect2"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
+          <select id="levelSelect2"></select>
+          <input type="number" id="trainAmount2" placeholder="Amount">
           <div class="result-box">
-            <div class="res-item">Time: <span id="time2">0s</span> | Pts: <span id="pts2">0</span></div>
+            <div class="res-item">Time: <span id="time2">0s</span> | KOI Pts: <span id="pts2">0</span></div>
             <div class="lot-resources">
-              <span>M: <span id="m2">0</span></span><span>L: <span id="l2">0</span></span>
-              <span>C: <span id="c2">0</span></span><span>I: <span id="i2">0</span></span>
+              <span>Meat: <span id="m2">0</span></span><span>Lumber: <span id="l2">0</span></span>
+              <span>Coal: <span id="c2">0</span></span><span>Iron: <span id="i2">0</span></span>
             </div>
-            <div class="eff-text">Troops p/s: <span id="tpsT2">0</span> | Points p/s: <span id="ppsT2">0</span></div>
+            <div class="eff-text">Troops p/s: <span id="tpsT2">0</span> | KOI Points p/s: <span id="ppsT2">0</span></div>
           </div>
-        </div>
-      </div>
-      <div class="column col-4 col-md-12 mb-2">
-        <div class="card p-2">
-          <h6>Lot 3</h6>
-          <select class="form-select mb-1" id="typeSelect3"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
-          <select class="form-select mb-1" id="levelSelect3"></select>
-          <input class="form-input mb-1" type="number" id="trainAmount3" placeholder="Amount">
+        </article>
+        <article>
+          <h6>Train 3</h6>
+          <select id="typeSelect3"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
+          <select id="levelSelect3"></select>
+          <input type="number" id="trainAmount3" placeholder="Amount">
           <div class="result-box">
-            <div class="res-item">Time: <span id="time3">0s</span> | Pts: <span id="pts3">0</span></div>
+            <div class="res-item">Time: <span id="time3">0s</span> | KOI Pts: <span id="pts3">0</span></div>
             <div class="lot-resources">
-              <span>M: <span id="m3">0</span></span><span>L: <span id="l3">0</span></span>
-              <span>C: <span id="c3">0</span></span><span>I: <span id="i3">0</span></span>
+              <span>Meat: <span id="m3">0</span></span><span>Lumber: <span id="l3">0</span></span>
+              <span>Coal: <span id="c3">0</span></span><span>Iron: <span id="i3">0</span></span>
             </div>
-            <div class="eff-text">Troops p/s: <span id="tpsT3">0</span> | Points p/s: <span id="ppsT3">0</span></div>
+            <div class="eff-text">Troops p/s: <span id="tpsT3">0</span> | KOI Points p/s: <span id="ppsT3">0</span></div>
           </div>
-        </div>
+        </article>
       </div>
-    </div>
+    </section>
 
-    <div class="divider"></div>
-
-    <h2>3. Promotion</h2>
-    <div class="columns">
-      <div class="column col-4 col-md-12 mb-2">
-        <div class="card p-2">
+    <section>
+      <h2>3. Promotion</h2>
+      <div class="grid">
+        <article>
           <h6>Promo 1</h6>
-          <select class="form-select mb-1" id="pType1"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
-          <select class="form-select mb-1" id="pFrom1"></select>
-          <select class="form-select mb-1" id="pTo1"></select>
-          <input class="form-input mb-1" type="number" id="pAmt1" placeholder="Amount">
+          <select id="pType1"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
+          <select id="pFrom1"></select>
+          <select id="pTo1"></select>
+          <input type="number" id="pAmt1" placeholder="Amount">
           <div class="result-box">
-            <div class="res-item">Time: <span id="pTime1">0s</span></div>
-            <div class="res-item">Pts: <span id="pPts1">0</span></div>
+            <div class="res-item">Time: <span id="pTime1">0s</span> | KOI Pts: <span id="pPts1">0</span></div>
             <div class="lot-resources">
-              <span>M: <span id="pm1">0</span></span><span>L: <span id="pl1">0</span></span>
-              <span>C: <span id="pc1">0</span></span><span>I: <span id="pi1">0</span></span>
+              <span>Meat: <span id="pm1">0</span></span><span>Lumber: <span id="pl1">0</span></span>
+              <span>Coal: <span id="pc1">0</span></span><span>Iron: <span id="pi1">0</span></span>
             </div>
-            <div class="eff-text">Troops p/s: <span id="tpsP1">0</span> | Points p/s: <span id="ppsP1">0</span></div>
+            <div class="eff-text">Troops p/s: <span id="tpsP1">0</span> | KOI Points p/s: <span id="ppsP1">0</span></div>
           </div>
-        </div>
-      </div>
-      <div class="column col-4 col-md-12 mb-2">
-        <div class="card p-2">
+        </article>
+        <article>
           <h6>Promo 2</h6>
-          <select class="form-select mb-1" id="pType2"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
-          <select class="form-select mb-1" id="pFrom2"></select>
-          <select class="form-select mb-1" id="pTo2"></select>
-          <input class="form-input mb-1" type="number" id="pAmt2" placeholder="Amount">
+          <select id="pType2"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
+          <select id="pFrom2"></select>
+          <select id="pTo2"></select>
+          <input type="number" id="pAmt2" placeholder="Amount">
           <div class="result-box">
-            <div class="res-item">Time: <span id="pTime2">0s</span></div><div class="res-item">Pts: <span id="pPts2">0</span></div>
+            <div class="res-item">Time: <span id="pTime2">0s</span> | KOI Pts: <span id="pPts2">0</span></div>
             <div class="lot-resources">
-              <span>M: <span id="pm2">0</span></span><span>L: <span id="pl2">0</span></span>
-              <span>C: <span id="pc2">0</span></span><span>I: <span id="pi2">0</span></span>
+              <span>Meat: <span id="pm2">0</span></span><span>Lumber: <span id="pl2">0</span></span>
+              <span>Coal: <span id="pc2">0</span></span><span>Iron: <span id="pi2">0</span></span>
             </div>
-            <div class="eff-text">Troops p/s: <span id="tpsP2">0</span> | Points p/s: <span id="ppsP2">0</span></div>
+            <div class="eff-text">Troops p/s: <span id="tpsP2">0</span> | KOI Points p/s: <span id="ppsP2">0</span></div>
           </div>
-        </div>
-      </div>
-      <div class="column col-4 col-md-12 mb-2">
-        <div class="card p-2">
+        </article>
+        <article>
           <h6>Promo 3</h6>
-          <select class="form-select mb-1" id="pType3"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
-          <select class="form-select mb-1" id="pFrom3"></select>
-          <select class="form-select mb-1" id="pTo3"></select>
-          <input class="form-input mb-1" type="number" id="pAmt3" placeholder="Amount">
+          <select id="pType3"><option>Infantry</option><option>Lancer</option><option>Marksman</option></select>
+          <select id="pFrom3"></select>
+          <select id="pTo3"></select>
+          <input type="number" id="pAmt3" placeholder="Amount">
           <div class="result-box">
-            <div class="res-item">Time: <span id="pTime3">0s</span></div><div class="res-item">Pts: <span id="pPts3">0</span></div>
+            <div class="res-item">Time: <span id="pTime3">0s</span> | KOI Pts: <span id="pPts3">0</span></div>
             <div class="lot-resources">
-              <span>M: <span id="pm3">0</span></span><span>L: <span id="pl3">0</span></span>
-              <span>C: <span id="pc3">0</span></span><span>I: <span id="pi3">0</span></span>
+              <span>Meat: <span id="pm3">0</span></span><span>Lumber: <span id="pl3">0</span></span>
+              <span>Coal: <span id="pc3">0</span></span><span>Iron: <span id="pi3">0</span></span>
             </div>
-            <div class="eff-text">Troops p/s: <span id="tpsP3">0</span> | Points p/s: <span id="ppsP3">0</span></div>
+            <div class="eff-text">Troops p/s: <span id="tpsP3">0</span> | KOI Points p/s: <span id="ppsP3">0</span></div>
           </div>
-        </div>
+        </article>
       </div>
-    </div>
+    </section>
 
-    <div class="grand-total-box">
-      <h4 class="text-center">Grand Summary</h4>
-      <div class="columns text-center">
-        <div class="column col-6">Total Time: <span id="grandTime">0s</span></div>
-        <div class="column col-6">Total KOI Points: <span id="grandPts">0</span></div>
+    <article class="grand-total-box">
+      <header><h4 style="margin:0">Grand Summary</h4></header>
+      <div class="grid">
+        <div class="text-center">Total Time: <br><strong id="grandTime">0s</strong></div>
+        <div class="text-center">Total KOI Points: <br><strong id="grandPts">0</strong></div>
       </div>
-      <div class="columns mt-2 text-center" style="font-size: 0.9rem;">
-        <div class="column col-3">Meat: <span class="res-value" id="grandMeat">0</span></div>
-        <div class="column col-3">Lumber: <span class="res-value" id="grandWood">0</span></div>
-        <div class="column col-3">Coal: <span class="res-value" id="grandCoal">0</span></div>
-        <div class="column col-3">Iron: <span class="res-value" id="grandIron">0</span></div>
+      <div class="grid" style="margin-top:1rem">
+        <div>Meat: <strong id="grandMeat">0</strong></div>
+        <div>Lumber: <strong id="grandWood">0</strong></div>
+        <div>Coal: <strong id="grandCoal">0</strong></div>
+        <div>Iron: <strong id="grandIron">0</strong></div>
       </div>
-      <button class="btn btn-block btn-lg mt-2" id="btnCalculateAll" style="background:#5755d9; color:white; border:none;">Calculate</button>
-    </div>
-
-    <div class="text-center mt-2">
-      <button class="btn btn-link" id="btnClear">Reset Everything</button>
-    </div>
-  </div>
+      <footer>
+        <button id="btnCalculateAll" class="primary">Calculate All</button>
+        <button id="btnClear" class="secondary outline">Reset All</button>
+      </footer>
+    </article>
+  </main>
 
   <script src="script.js"></script>
 </body>

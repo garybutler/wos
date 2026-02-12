@@ -1,0 +1,21 @@
+{
+  "stage_4": {
+    "name": "Hero Development",
+    "points": {
+      "chief_charm": 70,
+      "hero_gear_essence": 4000,
+      "widget": 8000,
+      "mithril": 40000,
+      "lvl1_troop": 3,
+      "lvl2_troop": 4,
+      "lvl3_troop": 5,
+      "lvl4_troop": 8,
+      "lvl5_troop": 12,
+      "lvl6_troop": 18,
+      "lvl7_troop": 25,
+      "lvl8_troop": 35,
+      "lvl9_troop": 45,
+      "lvl10_troop": 60
+    }
+  }
+}
